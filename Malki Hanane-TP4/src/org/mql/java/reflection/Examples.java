@@ -6,15 +6,14 @@ import org.mql.java.reflection.models.*;
 
 public class Examples {
     public Examples() {
-        exp01();
+        exp02();
     }
 
     void exp01() {
         System.out.println("------------------");
 
-        // Chemin du workspace
-        String workspacePath = "D:\\Master MQL M1\\data"; // Remplacez par le chemin de votre workspace
-        String projectName = "p03-reflection-and-annotations"; // Remplacez par le nom de votre projet
+        String workspacePath = "D:\\Master MQL M1\\data"; 
+        String projectName = "p03-reflection-and-annotations"; 
 
         PackageExplorer explorer = new PackageExplorer(workspacePath);
         Map<String, Map<String, List<TypeInfo>>> packagesAndTypes = explorer.getPackagesAndTypes(projectName);
@@ -30,6 +29,12 @@ public class Examples {
                 }
             }
         }
+    }
+
+    void exp02() {
+        PackageExplorer explorer = new PackageExplorer("D:\\Master MQL M1\\data");
+        Map<String, Map<String, List<TypeInfo>>> result = explorer.getPackagesAndTypes("p03-reflection-and-annotations");
+        explorer.printRelations(result);
     }
 
     public static void main(String[] args) {

@@ -4,10 +4,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import org.mql.java.reflection.PackageExplorer;
-import org.mql.java.reflection.models.TypeInfo;
+import org.mql.java.reflection.models.*;
 
 public class PackageExplorerFrame extends JFrame {
     private JTextField projectNameField;
@@ -23,7 +24,6 @@ public class PackageExplorerFrame extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        // Panel de saisie
         JPanel inputPanel = new JPanel();
         inputPanel.setLayout(new FlowLayout());
         inputPanel.setBackground(new Color(240, 248, 255));
@@ -60,7 +60,6 @@ public class PackageExplorerFrame extends JFrame {
 
         add(inputPanel, BorderLayout.NORTH);
 
-        // Zone de texte des résultats
         resultTextArea = new JTextArea();
         resultTextArea.setEditable(false);
         resultTextArea.setFont(new Font("Monospaced", Font.PLAIN, 14));
@@ -108,11 +107,10 @@ public class PackageExplorerFrame extends JFrame {
                     
                     details.append("\n\n=== Package : ").append(packageName).append(" ===\n");
                     
-                    // Afficher les différents types
-                    displayTypeCategory(details, types, "Classes");
-                    displayTypeCategory(details, types, "Interfaces");
-                    displayTypeCategory(details, types, "Enums");
-                    displayTypeCategory(details, types, "Annotations");
+                    displayTypeCategoryWithRelations(details, types, "Classes");
+                    displayTypeCategoryWithRelations(details, types, "Interfaces");
+                    displayTypeCategoryWithRelations(details, types, "Enums");
+                    displayTypeCategoryWithRelations(details, types, "Annotations");
                 }
             }
 
@@ -126,12 +124,40 @@ public class PackageExplorerFrame extends JFrame {
         }
     }
 
-    private void displayTypeCategory(StringBuilder details, Map<String, List<TypeInfo>> types, String category) {
+    private void displayTypeCategoryWithRelations(StringBuilder details, Map<String, List<TypeInfo>> types, String category) {
         List<TypeInfo> typeList = types.get(category);
         if (typeList != null && !typeList.isEmpty()) {
             details.append("\n").append(category).append(" :\n");
             for (TypeInfo type : typeList) {
                 details.append("  - ").append(type.toString()).append("\n");
+                displayRelations(details, type);
+            }
+        }
+    }
+
+    private void displayRelations(StringBuilder details, TypeInfo type) {
+        details.append("    Relations :\n");
+
+        if (type instanceof ClassInfo) {
+            ClassInfo classInfo = (ClassInfo) type;
+
+            if (classInfo.getSuperClass() != null) {
+                details.append("      Extends : ").append(classInfo.getSuperClass()).append("\n");
+            }
+
+            for (String iface : classInfo.getImplementedInterfaces()) {
+                details.append("      Implements : ").append(iface).append("\n");
+            }
+
+            for (RelationInfo relation : classInfo.getRelations()) {
+                details.append("      Uses : ").append(relation.getType()).append("\n");
+            }
+
+            for (Method method : classInfo.getClass().getDeclaredMethods()) {
+                details.append("      Method : ").append(method.getName()).append("\n");
+                for (Class<?> paramType : method.getParameterTypes()) {
+                    details.append("        Param : ").append(paramType.getName()).append("\n");
+                }
             }
         }
     }

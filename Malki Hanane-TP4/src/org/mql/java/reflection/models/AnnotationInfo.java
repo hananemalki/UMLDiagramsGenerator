@@ -17,10 +17,6 @@ public class AnnotationInfo extends TypeInfo {
     
     public List<AnnotationMethodInfo> getAnnotationMethods() { return annotationMethods; }
 
-//	@Override
-//	public String toString() {
-//		return "AnnotationInfo [annotationMethods=" + annotationMethods + "]";
-//	}
     @Override
     public String toString() {
         return String.format("%s [methods: %d]", getName(), annotationMethods.size());

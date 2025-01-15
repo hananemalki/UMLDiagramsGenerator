@@ -26,23 +26,19 @@ public class TypeInfo {
         this.packageName = clazz.getPackage().getName();
         this.modifiers = clazz.getModifiers();
         
-        // Extraire les interfaces
         for(Class<?> iface : clazz.getInterfaces()) {
             interfaces.add(iface.getSimpleName());
         }
         
-        // Extraire les champs
         for(Field field : clazz.getDeclaredFields()) {
             fields.add(new FieldInfo(field));
         }
         
-        // Extraire les méthodes
         for(Method method : clazz.getDeclaredMethods()) {
             methods.add(new MethodInfo(method));
         }
     }
     
-    // Getters et setters
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
     public String getPackageName() { return packageName; }

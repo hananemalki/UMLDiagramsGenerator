@@ -22,7 +22,7 @@ public class EnumInfo extends TypeInfo {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(getName()).append(" [");  // Utilise getName() au lieu de "EnumInfo"
+        sb.append(getName()).append(" [");
         
         for(int i = 0; i < enumConstants.size(); i++) {
             sb.append(enumConstants.get(i));
