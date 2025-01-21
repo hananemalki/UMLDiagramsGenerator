@@ -1,4 +1,4 @@
-package org.mql.java.reflection;
+package org.mql.java.reflection.models;
 
 import org.mql.java.reflection.models.*;
 import java.io.File;

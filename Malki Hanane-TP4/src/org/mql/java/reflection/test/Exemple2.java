@@ -1,4 +1,4 @@
-package org.mql.java;
+package org.mql.java.reflection.test;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -6,14 +6,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import org.mql.java.exemple.Commande;
-import org.mql.java.exemple.Facture;
-import org.mql.java.exemple.Produit;
-import org.mql.java.exemple.Utilisateur;
-import org.mql.java.models.ClassInfo;
-import org.mql.java.models.RelationInfo;
-import org.mql.java.models.TypeInfo;
-import org.mql.java.xml.XMIExporter;
+import org.mql.java.reflection.examples.Commande;
+import org.mql.java.reflection.examples.Facture;
+import org.mql.java.reflection.examples.Produit;
+import org.mql.java.reflection.examples.Utilisateur;
+import org.mql.java.reflection.models.ClassInfo;
+import org.mql.java.reflection.models.RelationInfo;
+import org.mql.java.reflection.models.TypeInfo;
+import org.mql.java.reflection.xml.XMIExporter;
 
 public class Exemple2 {
 	 public static void main(String[] args) {

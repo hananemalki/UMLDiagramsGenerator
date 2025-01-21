@@ -7,7 +7,7 @@ import java.awt.event.ActionListener;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
-import org.mql.java.reflection.PackageExplorer;
+import org.mql.java.reflection.models.PackageExplorer;
 import org.mql.java.reflection.models.*;
 
 public class PackageExplorerFrame extends JFrame {

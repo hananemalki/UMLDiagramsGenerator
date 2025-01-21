@@ -1,4 +1,4 @@
-package org.mql.java.reflection;
+package org.mql.java.reflection.test;
 
 import java.util.List;
 import java.util.Map;
