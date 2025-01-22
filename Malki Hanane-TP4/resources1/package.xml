@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project>
+    <package name="PackageName">
+        <class>
+            <name>ClassName</name>
+            <fields>
+                <field>
+                    <name>FieldName</name>
+                    <type>FieldType</type>
+                    <modifier>AccessModifier</modifier>
+                </field>
+            </fields>
+            <methods>
+                <method>
+                    <name>MethodName</name>
+                    <returnType>ReturnType</returnType>
+                    <modifier>AccessModifier</modifier>
+                    <parameters>
+                        <parameter>
+                            <name>ParamName</name>
+                            <type>ParamType</type>
+                        </parameter>
+                    </parameters>
+                </method>
+            </methods>
+            <relations>
+                <relation>
+                    <type>RelationType</type>
+                    <target>TargetClassName</target>
+                </relation>
+            </relations>
+        </class>
+    </package>
+</project>

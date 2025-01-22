@@ -1,14 +1,63 @@
 package org.mql.java.reflection.test;
+import java.lang.reflect.Field;
 
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
+
+import org.mql.java.reflection.examples.Produit;
 import org.mql.java.reflection.models.*;
+import org.mql.java.reflection.xml.XMLGenerator;
 
 public class Examples {
-    public Examples() {
-        exp02();
+    public Examples()  {
+        try {
+            exp02();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+    void exp03() {
+        List<ClassInfo> classes = new Vector<ClassInfo>(); // Précise le type générique
+        String packageName = "org.mql.java.reflection.examples"; // Assure-toi que packageName est défini
+
+        // Crée un objet ClassInfo pour Produit
+        ClassInfo classInfo = new ClassInfo(Produit.class);
+        
+        // Remplir la classe avec ses informations (champs, méthodes, etc.)
+        fillClassInfo(classInfo, Produit.class);
+        
+        // Ajouter la classe à la liste
+        classes.add(classInfo);
+
+        // Affiche les classes pour vérifier
+        System.out.println("Classes: " + classes);
+        
+        try {
+            // Générer le XML
+            XMLGenerator.generateXML(classes, packageName);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
+    private void fillClassInfo(ClassInfo classInfo, Class<?> clazz) {
+        // Remplir les champs
+        Field[] fields = clazz.getDeclaredFields();
+        for (Field field : fields) {
+            classInfo.addField(field);
+        }
+
+        // Remplir les méthodes
+        Method[] methods = clazz.getDeclaredMethods();
+        for (Method method : methods) {
+            classInfo.addMethod(method);
+        }
+    }
+
+   
     void exp01() {
         System.out.println("------------------");
 

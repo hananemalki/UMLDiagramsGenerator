@@ -1,5 +1,7 @@
 package org.mql.java.reflection.models;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Vector;
 
@@ -8,6 +10,8 @@ public class ClassInfo extends TypeInfo {
     
     private List<String> implementedInterfaces; 
     private List<RelationInfo> relations; 
+    private List<FieldInfo> fields;  
+    private List<MethodInfo> methods;
     
 //    public ClassInfo(Class<?> clazz) {
 //        super(clazz);
@@ -20,9 +24,19 @@ public class ClassInfo extends TypeInfo {
         this.superClass = clazz.getSuperclass() != null ? clazz.getSuperclass().getName() : null;
         this.implementedInterfaces = new Vector<>();
         this.relations = new Vector<>();
+        this.fields = new Vector<>(); 
+        this.methods = new Vector<>(); 
 
         for (Class<?> iface : clazz.getInterfaces()) {
             implementedInterfaces.add(iface.getName());
+        }
+
+        for (Field field : clazz.getDeclaredFields()) {
+            fields.add(new FieldInfo(field));  // Utilisation du constructeur FieldInfo(Field field)
+        }
+
+        for (Method method : clazz.getDeclaredMethods()) {
+            methods.add(new MethodInfo(method));  // Utilisation du constructeur MethodInfo(Method method)
         }
     }
     public String getSuperClass() { return superClass; }
@@ -45,6 +59,23 @@ public class ClassInfo extends TypeInfo {
 	        relations.add(relation);
 	    }
 	}
+
+    public List<FieldInfo> getFields() {
+        return fields;
+    }
+
+    public List<MethodInfo> getMethods() {
+        return methods;
+    }
+
+    public void addField(Field field) {
+        fields.add(new FieldInfo(field));  
+    }
+
+    public void addMethod(Method meth) {
+        methods.add(new MethodInfo(meth)); 
+    }
+
 	@Override
     public String toString() {
         String superClassName = superClass != null ? superClass : "None";
