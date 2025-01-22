@@ -4,6 +4,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Vector;
+import java.lang.reflect.Modifier;
+
 
 public class FieldInfo {
     private String name;
@@ -28,6 +30,13 @@ public class FieldInfo {
     public int getModifiers() { return modifiers; }
     public void setModifiers(int modifiers) { this.modifiers = modifiers; }
     public List<AnnotationInfo> getAnnotations() { return annotations; }
+
+    public String getVisibility() {
+        if (Modifier.isPublic(modifiers)) return "public";
+        if (Modifier.isProtected(modifiers)) return "protected";
+        if (Modifier.isPrivate(modifiers)) return "private";
+        return "package"; 
+    }
 
 	@Override
 	public String toString() {

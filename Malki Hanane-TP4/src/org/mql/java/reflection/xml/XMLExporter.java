@@ -29,7 +29,6 @@ public class XMLExporter {
             DocumentBuilder builder = factory.newDocumentBuilder();
             document = builder.newDocument();
 
-            // Créer l'élément racine
             Element rootElement = document.createElement("project");
             document.appendChild(rootElement);
 
@@ -41,20 +40,15 @@ public class XMLExporter {
 
                 Map<String, List<TypeInfo>> typesMap = packageEntry.getValue();
 
-                // Ajouter les classes
                 processTypeList(typesMap.get("Classes"), "class", packageElement);
 
-                // Ajouter les interfaces
                 processTypeList(typesMap.get("Interfaces"), "interface", packageElement);
 
-                // Ajouter les énumérations
                 processTypeList(typesMap.get("Enums"), "enum", packageElement);
 
-                // Ajouter les annotations
                 processTypeList(typesMap.get("Annotations"), "annotation", packageElement);
             }
 
-            // Sauvegarder le document XML
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
             DOMSource source = new DOMSource(document);
@@ -77,7 +71,6 @@ public class XMLExporter {
             typeElement.setAttribute("name", type.getName());
             typesElement.appendChild(typeElement);
 
-            // Ajouter les champs
             if (!type.getFields().isEmpty()) {
                 Element fieldsElement = document.createElement("fields");
                 typeElement.appendChild(fieldsElement);
@@ -90,7 +83,6 @@ public class XMLExporter {
                 }
             }
 
-            // Ajouter les méthodes
             if (!type.getMethods().isEmpty()) {
                 Element methodsElement = document.createElement("methods");
                 typeElement.appendChild(methodsElement);
@@ -101,7 +93,6 @@ public class XMLExporter {
                     methodElement.setAttribute("returnType", method.getReturnType());
                     methodsElement.appendChild(methodElement);
 
-                    // Ajouter les paramètres de la méthode
                     if (!method.getParameters().isEmpty()) {
                         Element parametersElement = document.createElement("parameters");
                         methodElement.appendChild(parametersElement);
@@ -116,7 +107,6 @@ public class XMLExporter {
                 }
             }
 
-            // Ajouter les relations pour les ClassInfo
             if (type instanceof ClassInfo) {
                 ClassInfo classInfo = (ClassInfo) type;
                 if (!classInfo.getRelations().isEmpty()) {

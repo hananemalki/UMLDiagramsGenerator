@@ -1,6 +1,7 @@
 package org.mql.java.reflection.models;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.util.List;
 import java.util.Vector;
@@ -36,6 +37,13 @@ public class MethodInfo {
     public int getModifiers() { return modifiers; }
     public void setModifiers(int modifiers) { this.modifiers = modifiers; }
     public List<AnnotationInfo> getAnnotations() { return annotations; }
+
+    public String getVisibility() {
+        if (Modifier.isPublic(modifiers)) return "public";
+        if (Modifier.isProtected(modifiers)) return "protected";
+        if (Modifier.isPrivate(modifiers)) return "private";
+        return "package"; 
+    }
 
 	@Override
 	public String toString() {
