@@ -102,6 +102,12 @@ public class XMIExporter {
             Element attributeElement = document.createElement("ownedAttribute");
             attributeElement.setAttribute("xmi:id", "attr_" + classInfo.getName() + "_" + field.getName());
             attributeElement.setAttribute("name", field.getName());
+
+            Element typeElement = document.createElement("type");
+            typeElement.setAttribute("xmi:type", "uml:Class");
+            typeElement.setAttribute("href", "pathto:" + field.getType()); // Or use appropriate type reference
+            attributeElement.appendChild(typeElement);
+
             attributeElement.setAttribute("visibility", field.getVisibility());
             classElement.appendChild(attributeElement);
         }

@@ -38,7 +38,6 @@ public class XMLGenerator {
 
         packageElement.setAttribute("name", packageName);
 
-        // Ajouter les classes dans le package
         for (ClassInfo classInfo : classes) {
             createClassXML(classInfo, doc, packageElement);
         }
@@ -48,12 +47,10 @@ public class XMLGenerator {
         Element classElement = doc.createElement("class");
         parentElement.appendChild(classElement);
 
-        // Ajouter le nom de la classe
         Element classNameElement = doc.createElement("name");
         classNameElement.appendChild(doc.createTextNode(classInfo.getName()));
         classElement.appendChild(classNameElement);
 
-        // Ajouter les champs de la classe
         Element fieldsElement = doc.createElement("fields");
         classElement.appendChild(fieldsElement);
         List<FieldInfo> fields = classInfo.getFields();
@@ -61,7 +58,6 @@ public class XMLGenerator {
             createFieldXML(field, doc, fieldsElement);
         }
 
-        // Ajouter les méthodes de la classe
         Element methodsElement = doc.createElement("methods");
         classElement.appendChild(methodsElement);
         List<MethodInfo> methods = classInfo.getMethods();
@@ -73,13 +69,10 @@ public class XMLGenerator {
     private static void createFieldXML(FieldInfo field, Document doc, Element parentElement) {
         Element fieldElement = doc.createElement("field");
         parentElement.appendChild(fieldElement);
-
-        // Nom du champ
         Element nameElement = doc.createElement("name");
         nameElement.appendChild(doc.createTextNode(field.getName()));
         fieldElement.appendChild(nameElement);
 
-        // Type du champ
         Element typeElement = doc.createElement("type");
         typeElement.appendChild(doc.createTextNode(field.getType()));
         fieldElement.appendChild(typeElement);
@@ -89,12 +82,10 @@ public class XMLGenerator {
         Element methodElement = doc.createElement("method");
         parentElement.appendChild(methodElement);
 
-        // Nom de la méthode
         Element nameElement = doc.createElement("name");
         nameElement.appendChild(doc.createTextNode(method.getName()));
         methodElement.appendChild(nameElement);
 
-        // Type de retour de la méthode
         Element returnTypeElement = doc.createElement("returnType");
         returnTypeElement.appendChild(doc.createTextNode(method.getReturnType()));
         methodElement.appendChild(returnTypeElement);

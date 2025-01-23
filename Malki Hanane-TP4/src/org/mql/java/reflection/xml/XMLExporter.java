@@ -32,7 +32,6 @@ public class XMLExporter {
             Element rootElement = document.createElement("project");
             document.appendChild(rootElement);
 
-            // Parcourir tous les packages
             for (Map.Entry<String, Map<String, List<TypeInfo>>> packageEntry : packagesAndTypes.entrySet()) {
                 Element packageElement = document.createElement("package");
                 packageElement.setAttribute("name", packageEntry.getKey());

@@ -30,7 +30,8 @@ public class MethodInfo {
     }
     
     public MethodInfo() {
-        //TODO Auto-generated constructor stub
+        this.parameters = new Vector<>();
+        this.annotations = new Vector<>();
     }
 
     public String getName() { return name; }

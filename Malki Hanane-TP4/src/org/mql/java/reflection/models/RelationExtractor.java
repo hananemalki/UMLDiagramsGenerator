@@ -2,8 +2,7 @@ package org.mql.java.reflection.models;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
+
 
 public class RelationExtractor {
     public static void extractRelations(ClassInfo classInfo, Class<?> clazz) {
@@ -36,7 +35,17 @@ public class RelationExtractor {
         }
     }
 
+    // private static boolean isComposition(Field field) {
+    //     return field.getType().getSimpleName().equals("Form");
+    // }
     private static boolean isComposition(Field field) {
-        return field.getType().getSimpleName().equals("Form");
+        Class<?> fieldType = field.getType();
+        
+        return !fieldType.isPrimitive() && 
+               !fieldType.getName().startsWith("java.lang") &&
+               !fieldType.getName().startsWith("java.util") &&
+               (fieldType.getSimpleName().equals("Form") || 
+                fieldType.getName().contains("Component") ||
+                fieldType.getName().contains("Panel"));
     }
 }

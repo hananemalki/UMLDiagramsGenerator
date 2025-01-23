@@ -48,12 +48,12 @@ public class Examples {
     private void fillClassInfo(ClassInfo classInfo, Class<?> clazz) {
         Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
-            classInfo.addField(field);
+            classInfo.addField(new FieldInfo(field));
         }
 
         Method[] methods = clazz.getDeclaredMethods();
         for (Method method : methods) {
-            classInfo.addMethod(method);
+            classInfo.addMethod(new MethodInfo(method));
         }
     }
 

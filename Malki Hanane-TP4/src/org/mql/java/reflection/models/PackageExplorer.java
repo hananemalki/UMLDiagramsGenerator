@@ -97,9 +97,9 @@ public class PackageExplorer {
         }
     }
 
-    private boolean isComposition(Field field) {
-        return field.getType().getSimpleName().equals("Form"); 
-    }
+    // private boolean isComposition(Field field) {
+    //     return field.getType().getSimpleName().equals("Form"); 
+    // }
 
     public void printRelations(Map<String, Map<String, List<TypeInfo>>> packagesAndTypes) {
         for (String packageName : packagesAndTypes.keySet()) {

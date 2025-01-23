@@ -33,6 +33,10 @@ public class ClassInfo extends TypeInfo {
         }
     }
     public ClassInfo() {
+        this.implementedInterfaces = new Vector<>();
+        this.relations = new Vector<>();
+        this.fields = new Vector<>(); 
+        this.methods = new Vector<>(); 
     }
     public String getSuperClass() { return superClass; }
     public void setSuperClass(String superClass) { this.superClass = superClass; }
@@ -63,12 +67,22 @@ public class ClassInfo extends TypeInfo {
         return methods;
     }
 
-    public void addField(Field field) {
-        fields.add(new FieldInfo(field));  
+    //public void addField(Field field) {
+      //  fields.add(new FieldInfo(field));  
+    //}
+    public void addField(FieldInfo fieldInfo) {
+        if (!fields.contains(fieldInfo)) {
+            fields.add(fieldInfo);
+        }
     }
 
-    public void addMethod(Method meth) {
-        methods.add(new MethodInfo(meth)); 
+    // public void addMethod(Method meth) {
+    //     methods.add(new MethodInfo(meth)); 
+    // }
+    public void addMethod(MethodInfo methInfo) {
+        if (!methods.contains(methInfo)) {
+            methods.add(methInfo);
+        }
     }
 
     public void addImplementedInterface(String interfaceName) {

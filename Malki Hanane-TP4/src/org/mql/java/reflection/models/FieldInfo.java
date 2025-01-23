@@ -24,7 +24,10 @@ public class FieldInfo {
     }
     
     public FieldInfo() {
-        //TODO Auto-generated constructor stub
+        this.annotations = new Vector<>();
+        this.name = "";
+        this.type = "";
+        this.modifiers = 0;
     }
 
     public String getName() { return name; }
