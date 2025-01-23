@@ -15,6 +15,10 @@ public class AnnotationInfo extends TypeInfo {
         }
     }
     
+    public AnnotationInfo() {
+        //TODO Auto-generated constructor stub
+    }
+
     public List<AnnotationMethodInfo> getAnnotationMethods() { return annotationMethods; }
 
     @Override

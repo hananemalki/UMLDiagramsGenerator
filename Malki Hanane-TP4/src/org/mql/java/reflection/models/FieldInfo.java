@@ -23,6 +23,10 @@ public class FieldInfo {
         }
     }
     
+    public FieldInfo() {
+        //TODO Auto-generated constructor stub
+    }
+
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
     public String getType() { return type; }
@@ -36,6 +40,9 @@ public class FieldInfo {
         if (Modifier.isProtected(modifiers)) return "protected";
         if (Modifier.isPrivate(modifiers)) return "private";
         return "package"; 
+    }
+    public void addAnnotation(AnnotationInfo annotation) {
+        this.annotations.add(annotation);
     }
 
 	@Override

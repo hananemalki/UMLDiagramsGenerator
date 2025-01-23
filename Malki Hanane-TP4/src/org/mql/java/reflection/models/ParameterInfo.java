@@ -19,12 +19,18 @@ public class ParameterInfo {
         }
     }
     
+    public ParameterInfo() {
+        //TODO Auto-generated constructor stub
+    }
+
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
     public List<AnnotationInfo> getAnnotations() { return annotations; }
-
+    public void addAnnotation(AnnotationInfo annotation) {
+        this.annotations.add(annotation);
+    }
 	@Override
 	public String toString() {
 		return "ParameterInfo [name=" + name + ", type=" + type + ", annotations=" + annotations + "]";

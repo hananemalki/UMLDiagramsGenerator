@@ -17,6 +17,10 @@ public class EnumInfo extends TypeInfo {
         }
     }
     
+    public EnumInfo() {
+        //TODO Auto-generated constructor stub
+    }
+
     public List<String> getEnumConstants() { return enumConstants; }
 
     @Override

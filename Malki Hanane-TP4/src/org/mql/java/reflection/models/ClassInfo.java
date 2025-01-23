@@ -7,18 +7,11 @@ import java.util.Vector;
 
 public class ClassInfo extends TypeInfo {
     private String superClass;
-    
     private List<String> implementedInterfaces; 
     private List<RelationInfo> relations; 
     private List<FieldInfo> fields;  
     private List<MethodInfo> methods;
     
-//    public ClassInfo(Class<?> clazz) {
-//        super(clazz);
-//        if(clazz.getSuperclass() != null) {
-//            this.superClass = clazz.getSuperclass().getSimpleName();
-//        }
-//    }
     public ClassInfo(Class<?> clazz) {
         super(clazz);
         this.superClass = clazz.getSuperclass() != null ? clazz.getSuperclass().getName() : null;
@@ -32,12 +25,14 @@ public class ClassInfo extends TypeInfo {
         }
 
         for (Field field : clazz.getDeclaredFields()) {
-            fields.add(new FieldInfo(field));  // Utilisation du constructeur FieldInfo(Field field)
+            fields.add(new FieldInfo(field));  
         }
 
         for (Method method : clazz.getDeclaredMethods()) {
-            methods.add(new MethodInfo(method));  // Utilisation du constructeur MethodInfo(Method method)
+            methods.add(new MethodInfo(method));  
         }
+    }
+    public ClassInfo() {
     }
     public String getSuperClass() { return superClass; }
     public void setSuperClass(String superClass) { this.superClass = superClass; }
@@ -74,6 +69,12 @@ public class ClassInfo extends TypeInfo {
 
     public void addMethod(Method meth) {
         methods.add(new MethodInfo(meth)); 
+    }
+
+    public void addImplementedInterface(String interfaceName) {
+        if (!implementedInterfaces.contains(interfaceName)) {
+            implementedInterfaces.add(interfaceName);
+        }
     }
 
 	@Override
