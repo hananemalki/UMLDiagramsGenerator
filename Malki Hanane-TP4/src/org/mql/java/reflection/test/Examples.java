@@ -4,8 +4,11 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
+import org.mql.java.reflection.models.AnnotationInfo;
 import org.mql.java.reflection.models.ClassInfo;
+import org.mql.java.reflection.models.EnumInfo;
 import org.mql.java.reflection.models.FieldInfo;
+import org.mql.java.reflection.models.InterfaceInfo;
 import org.mql.java.reflection.models.MethodInfo;
 import org.mql.java.reflection.models.PackageExplorer;
 import org.mql.java.reflection.models.RelationInfo;
@@ -34,44 +37,62 @@ public class Examples {
         }
     }
     private void display(Map<String, Map<String, List<TypeInfo>>> packagesAndTypes) {
-        StringBuilder sb = new StringBuilder();
-        for (Map.Entry<String, Map<String, List<TypeInfo>>> packageEntry : packagesAndTypes.entrySet()) {
-            sb.append("Package: ").append(packageEntry.getKey()).append("\n");
-            Map<String, List<TypeInfo>> typesMap = packageEntry.getValue();
-            for (Map.Entry<String, List<TypeInfo>> typeEntry : typesMap.entrySet()) {
-                String typeCategory = typeEntry.getKey(); 
-                sb.append("  Type: ").append(typeCategory).append("\n");
-                for (TypeInfo type : typeEntry.getValue()) {
-                    if (type instanceof ClassInfo) {
-                        ClassInfo classInfo = (ClassInfo) type;
-                        sb.append("    Class: ").append(classInfo.getName()).append("\n");
-                        if (!classInfo.getFields().isEmpty()) {
-                            sb.append("      Fields:\n");
-                            for (FieldInfo fieldInfo : classInfo.getFields()) {
-                                sb.append("        - ").append(fieldInfo.getName())
-                                .append(" (").append(fieldInfo.getType()).append(")\n");
-                            }
-                        }
-                        if (!classInfo.getMethods().isEmpty()) {
-                            sb.append("      Methods:\n");
-                            for (MethodInfo methodInfo : classInfo.getMethods()) {
-                                sb.append("        - ").append(methodInfo.getName())
-                                .append("() -> ").append(methodInfo.getReturnType()).append("\n");
-                            }
-                        }
-                        if (!classInfo.getRelations().isEmpty()) {
-                            sb.append("      Relations:\n");
-                            for (RelationInfo relationInfo : classInfo.getRelations()) {
-                                sb.append("        - ").append(relationInfo.getType())
-                                .append(" -> ").append(relationInfo.getTarget()).append("\n");
-                            }
+    StringBuilder sb = new StringBuilder();
+    for (Map.Entry<String, Map<String, List<TypeInfo>>> packageEntry : packagesAndTypes.entrySet()) {
+        sb.append("Package: ").append(packageEntry.getKey()).append("\n");
+        Map<String, List<TypeInfo>> typesMap = packageEntry.getValue();
+        for (Map.Entry<String, List<TypeInfo>> typeEntry : typesMap.entrySet()) {
+            String typeCategory = typeEntry.getKey(); 
+            sb.append("  Type: ").append(typeCategory).append("\n");
+
+            for (TypeInfo type : typeEntry.getValue()) {
+                if (type instanceof ClassInfo) {
+                    ClassInfo classInfo = (ClassInfo) type;
+                    sb.append("    Class: ").append(classInfo.getName()).append("\n");
+                    if (!classInfo.getFields().isEmpty()) {
+                        sb.append("      Fields:\n");
+                        for (FieldInfo fieldInfo : classInfo.getFields()) {
+                            sb.append("        - ").append(fieldInfo.getName())
+                              .append(" (").append(fieldInfo.getType()).append(")\n");
                         }
                     }
+                    if (!classInfo.getMethods().isEmpty()) {
+                        sb.append("      Methods:\n");
+                        for (MethodInfo methodInfo : classInfo.getMethods()) {
+                            sb.append("        - ").append(methodInfo.getName())
+                              .append("() -> ").append(methodInfo.getReturnType()).append("\n");
+                        }
+                    }
+                    if (!classInfo.getRelations().isEmpty()) {
+                        sb.append("      Relations:\n");
+                        for (RelationInfo relationInfo : classInfo.getRelations()) {
+                            sb.append("        - ").append(relationInfo.getType())
+                              .append(" -> ").append(relationInfo.getTarget()).append("\n");
+                        }
+                    }
+                } else if (type instanceof InterfaceInfo) {
+                    InterfaceInfo interfaceInfo = (InterfaceInfo) type;
+                    sb.append("    Interface: ").append(interfaceInfo.getName()).append("\n");
+                    if (!interfaceInfo.getMethods().isEmpty()) {
+                        sb.append("      Methods:\n");
+                        for (MethodInfo methodInfo : interfaceInfo.getMethods()) {
+                            sb.append("        - ").append(methodInfo.getName())
+                              .append("() -> ").append(methodInfo.getReturnType()).append("\n");
+                        }
+                    }
+                } else if (type instanceof EnumInfo) {
+                    EnumInfo enumInfo = (EnumInfo) type;
+                    sb.append("    Enum: ").append(enumInfo.getName()).append("\n");
+
+                } else if (type instanceof AnnotationInfo) {
+                    AnnotationInfo annotationInfo = (AnnotationInfo) type;
+                    sb.append("    Annotation: ").append(annotationInfo.getName()).append("\n");
                 }
             }
-            sb.append("\n");
         }
-        System.out.println(sb.toString()); 
+        sb.append("\n");
+    }
+    System.out.println(sb.toString());
     }
 
     private void exportToXML(Map<String, Map<String, List<TypeInfo>>> packagesAndTypes, String outputPath) {

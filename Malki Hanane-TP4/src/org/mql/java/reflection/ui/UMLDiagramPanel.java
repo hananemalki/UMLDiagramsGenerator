@@ -110,7 +110,10 @@ public class UMLDiagramPanel extends JPanel {
     private void drawRelations(Graphics2D g2d) {
         for (CustomPackage customPackage : packages) {
             for (ClassInfo classInfo : customPackage.getClasses()) {
+                System.out.println("Total relations: " + classInfo.getRelations().size());
                 for (RelationInfo relation : classInfo.getRelations()) {
+                    System.out.println("Relation details: " + relation);
+
                     if (relation.getSource().startsWith("java.") || relation.getTarget().startsWith("java.")) {
                         System.out.println("Ignorer la relation externe : " + relation);
                         continue;
@@ -131,7 +134,9 @@ public class UMLDiagramPanel extends JPanel {
     }
 
     private Rectangle findClassRectangle(String className) {
+        System.out.println("Searching for class: " + className);
         for (CustomPackage customPackage : packages) {
+            
             for (ClassInfo classInfo : customPackage.getClasses()) {
                 if (classInfo.getName().equals(className) || 
                     (customPackage.getName() + "." + classInfo.getName()).equals(className)) {

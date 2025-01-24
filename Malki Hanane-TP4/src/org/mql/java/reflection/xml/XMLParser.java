@@ -162,12 +162,11 @@ public class XMLParser {
             target = targetNode.getValue();
         }
     
-        XMLNode sourceNode = relationNode.child("source");
-        if (sourceNode != null) {
-            source = sourceNode.getValue();
+        if (target == null && type != null) {
+            target = type;
         }
     
-        RelationInfo relation = new RelationInfo(source, target, type);
+        RelationInfo relation = new RelationInfo(null, target, type);
         return relation;
     }
 
