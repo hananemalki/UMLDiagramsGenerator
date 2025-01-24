@@ -54,9 +54,12 @@ public class ClassInfo extends TypeInfo {
 		this.relations = relations;
 	}
 	public void addRelation(RelationInfo relation) {
-	    if (!relations.contains(relation)) {
-	        relations.add(relation);
-	    }
+	    // if (!relations.contains(relation)) {
+	    //     relations.add(relation);
+	    // }
+        if (relation != null && !relations.contains(relation)) {
+            relations.add(relation);
+        }
 	}
 
     public List<FieldInfo> getFields() {

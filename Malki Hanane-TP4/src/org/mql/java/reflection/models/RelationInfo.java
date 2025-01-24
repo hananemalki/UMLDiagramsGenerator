@@ -7,12 +7,19 @@ public class RelationInfo {
     private String target; 
     private String type;
 	public RelationInfo() {
+		this.source = "";
+        this.target = "";
+        this.type = "";
 	}
 	public RelationInfo(String source, String target, String type) {
 		super();
-		this.source = source;
-		this.target = target;
-		this.type = type;
+		// this.source = source;
+		// this.target = target;
+		// this.type = type;
+
+		this.source = source != null ? source : "";
+        this.target = target != null ? target : "";
+        this.type = type != null ? type : "";
 	}
 	
 	public String getSource() {

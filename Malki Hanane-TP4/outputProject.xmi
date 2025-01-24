@@ -1,1 +1,29 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><XMI xmlns:uml="http://www.omg.org/spec/UML/20090901" xmlns:xmi="http://www.omg.org/XMI"><uml:Model name="MyProject" xmi:id="model1"><packagedElement name="Model" xmi:id="package_Model" xmi:type="uml:Package"><packagedElement name="Utilisateur" xmi:id="class_Utilisateur" xmi:type="uml:Class"><ownedAttribute name="has" xmi:id="rel_Utilisateur_Commande"/></packagedElement><packagedElement name="Produit" xmi:id="class_Produit" xmi:type="uml:Class"/><packagedElement name="Commande" xmi:id="class_Commande" xmi:type="uml:Class"><ownedAttribute name="contains" xmi:id="rel_Commande_Produit"/><ownedAttribute name="isInvoicedBy" xmi:id="rel_Commande_Facture"/></packagedElement><packagedElement name="Facture" xmi:id="class_Facture" xmi:type="uml:Class"/></packagedElement></uml:Model></XMI>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xmi:XMI xmlns:xmi="http://www.omg.org/spec/XMI/20131001" 
+         xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    
+    <uml:Model name="ProjectModel" xmi:id="model">
+
+    <packagedElement name="org.mql.java.reflection.examples" xmi:id="package_org_mql_java_reflection_examples" xmi:type="uml:Package">
+
+        <packagedElement name="Utilisateur" xmi:id="type_Utilisateur" xmi:type="uml:Class">
+
+            <ownedAttribute name="nom" visibility="private" xmi:id="attr_Utilisateur_nom"></ownedAttribute>
+            <ownedAttribute name="email" visibility="private" xmi:id="attr_Utilisateur_email"></ownedAttribute>
+
+            <ownedOperation name="toString" visibility="public" xmi:id="op_Utilisateur_toString"/>
+
+            <ownedOperation name="setNom" visibility="public" xmi:id="op_Utilisateur_setNom"/>
+            <ownedOperation name="getNom" visibility="public" xmi:id="op_Utilisateur_getNom"/>
+            <ownedOperation name="getEmail" visibility="public" xmi:id="op_Utilisateur_getEmail"/>
+            
+        </packagedElement>
+    </packagedElement>
+    
+</uml:Model></xmi:XMI>
+
+
+
+
+

@@ -1,162 +1,219 @@
-// package org.mql.java.reflection.xml;
+package org.mql.java.reflection.xml;
 
-// import org.mql.java.reflection.models.*;
+import java.util.List;
+import java.util.Vector;
+import org.mql.java.reflection.models.*;
 
-// public class XMLParser {
+public class XMLParser {
 
-//     public static CustomPackage parseXML(String xmlFilePath) {
-//         XMLNode rootNode = new XMLNode(xmlFilePath);  // Charger le fichier XML
-//         CustomPackage customPackage = new CustomPackage(rootNode.getName());  // Créer un package personnalisé
+    public static List<CustomPackage> parse(String filePath) {
+        List<CustomPackage> packages = new Vector<>();
+        XMLNode root = new XMLNode(filePath); // Charge le fichier XML
 
-//         // Analyser les classes
-//         XMLNode[] classNodes = rootNode.children();  // Récupérer toutes les classes
-//         for (XMLNode classNode : classNodes) {
-//             ClassInfo classInfo = parseClass(classNode);  // Analyser une classe
-//             customPackage.addClass(classInfo);  // Ajouter la classe au package
-//         }
+        // Parcourir les packages
+        for (XMLNode packageNode : root.children()) {
+            if (packageNode.getName().equals("package")) {
+                CustomPackage customPackage = parsePackage(packageNode);
+                packages.add(customPackage);
+            }
+        }
 
-//         // Ajouter des interfaces
-//         XMLNode interfacesNode = rootNode.child("interfaces");
-//         if (interfacesNode != null) {
-//             XMLNode[] interfaceNodes = interfacesNode.children();
-//             for (XMLNode interfaceNode : interfaceNodes) {
-//                 InterfaceInfo interfaceInfo = new InterfaceInfo();
-//                 interfaceInfo.setName(interfaceNode.getValue());  // Définir le nom de l'interface
-//                 customPackage.addInterface(interfaceInfo);  // Ajouter l'interface au package
-//             }
-//         }
+        return packages;
+    }
 
-//         // Ajouter des énumérations
-//         XMLNode enumsNode = rootNode.child("enums");
-//         if (enumsNode != null) {
-//             XMLNode[] enumNodes = enumsNode.children();
-//             for (XMLNode enumNode : enumNodes) {
-//                 EnumInfo enumInfo = new EnumInfo();
-//                 enumInfo.setName(enumNode.getValue());  // Définir le nom de l'énumération
-//                 customPackage.addEnum(enumInfo);  // Ajouter l'énumération au package
-//             }
-//         }
+    private static CustomPackage parsePackage(XMLNode packageNode) {
+        String packageName = packageNode.attribute("name");
+        CustomPackage customPackage = new CustomPackage(packageName);
 
-//         // Ajouter des annotations
-//         XMLNode annotationsNode = rootNode.child("annotations");
-//         if (annotationsNode != null) {
-//             XMLNode[] annotationNodes = annotationsNode.children();
-//             for (XMLNode annotationNode : annotationNodes) {
-//                 AnnotationInfo annotationInfo = new AnnotationInfo();
-//                 annotationInfo.setName(annotationNode.getValue());  // Définir le nom de l'annotation
-//                 customPackage.addAnnotation(annotationInfo);  // Ajouter l'annotation au package
-//             }
-//         }
+        // Parcourir les classes, interfaces, enums et annotations
+        for (XMLNode child : packageNode.children()) {
+            switch (child.getName()) {
+                case "class":
+                    customPackage.addClass(parseClass(child));
+                    break;
+                case "interface":
+                    customPackage.addInterface(parseInterface(child));
+                    break;
+                case "enum":
+                    customPackage.addEnum(parseEnum(child));
+                    break;
+                case "annotation":
+                    customPackage.addAnnotation(parseAnnotation(child));
+                    break;
+            }
+        }
 
-//         return customPackage;  // Retourner le package complet
-//     }
+        return customPackage;
+    }
 
-//     private static ClassInfo parseClass(XMLNode classNode) {
-//         ClassInfo classInfo = new ClassInfo();
-//         classInfo.setName(classNode.getValue());  // Définir le nom de la classe
+    private static ClassInfo parseClass(XMLNode classNode) {
+        String className = classNode.child("name").getValue();
+        ClassInfo classInfo = new ClassInfo();
+        classInfo.setName(className);
 
-//         // Analyser les superclasses
-//         XMLNode superClassNode = classNode.child("superClass");
-//         if (superClassNode != null) {
-//             classInfo.setSuperClass(superClassNode.getValue());
-//         }
+        // Parcourir les champs
+        XMLNode fieldsNode = classNode.child("fields");
+        if (fieldsNode != null) {
+            for (XMLNode fieldNode : fieldsNode.children()) {
+                classInfo.addField(parseField(fieldNode));
+            }
+        }
 
-//         // Analyser les interfaces
-//         XMLNode interfacesNode = classNode.child("interfaces");
-//         if (interfacesNode != null) {
-//             XMLNode[] interfaceNodes = interfacesNode.children();
-//             for (XMLNode interfaceNode : interfaceNodes) {
-//                 //classInfo.addInterface(interfaceNode.getValue());  // Ajouter l'interface
-//             }
-//         }
+        // Parcourir les méthodes
+        XMLNode methodsNode = classNode.child("methods");
+        if (methodsNode != null) {
+            for (XMLNode methodNode : methodsNode.children()) {
+                classInfo.addMethod(parseMethod(methodNode));
+            }
+        }
 
-//         // Analyser les champs
-//         XMLNode fieldsNode = classNode.child("fields");
-//         if (fieldsNode != null) {
-//             XMLNode[] fieldNodes = fieldsNode.children();
-//             for (XMLNode fieldNode : fieldNodes) {
-//                 FieldInfo fieldInfo = parseField(fieldNode);  // Parser un champ
-//                 //classInfo.addField(fieldInfo);  // Ajouter le champ à la classe
-//             }
-//         }
+        // Parcourir les relations
+        XMLNode relationsNode = classNode.child("relations");
+        if (relationsNode != null) {
+            for (XMLNode relationNode : relationsNode.children()) {
+                classInfo.addRelation(parseRelation(relationNode));
+            }
+        }
 
-//         // Analyser les méthodes
-//         XMLNode methodsNode = classNode.child("methods");
-//         if (methodsNode != null) {
-//             XMLNode[] methodNodes = methodsNode.children();
-//             for (XMLNode methodNode : methodNodes) {
-//                 MethodInfo methodInfo = parseMethod(methodNode);  // Parser une méthode
-//                // classInfo.addMethod(methodInfo);  // Ajouter la méthode à la classe
-//             }
-//         }
+        return classInfo;
+    }
 
-//         return classInfo;  // Retourner la classe complète
-//     }
+    private static FieldInfo parseField(XMLNode fieldNode) {
+        String fieldName = null;
+        String fieldType = null;
+        String modifier = null;
 
-//     private static FieldInfo parseField(XMLNode fieldNode) {
-//         FieldInfo fieldInfo = new FieldInfo();
-//         fieldInfo.setName(fieldNode.child("name").getValue());  // Définir le nom du champ
-//         fieldInfo.setType(fieldNode.child("type").getValue());  // Définir le type du champ
+        XMLNode nameNode = fieldNode.child("name");
+        if (nameNode != null) {
+            fieldName = nameNode.getValue();
+        }
 
-//         // Ajouter les annotations au champ
-//         XMLNode annotationsNode = fieldNode.child("annotations");
-//         if (annotationsNode != null) {
-//             XMLNode[] annotationNodes = annotationsNode.children();
-//             for (XMLNode annotationNode : annotationNodes) {
-//                 AnnotationInfo annotationInfo = new AnnotationInfo();
-//                 annotationInfo.setName(annotationNode.getValue());  // Définir le nom de l'annotation
-//                 fieldInfo.addAnnotation(annotationInfo);  // Ajouter l'annotation au champ
-//             }
-//         }
+        XMLNode typeNode = fieldNode.child("type");
+        if (typeNode != null) {
+            fieldType = typeNode.getValue();
+        }
 
-//         return fieldInfo;  // Retourner le champ complet
-//     }
+        XMLNode modifierNode = fieldNode.child("modifier");
+        if (modifierNode != null) {
+            modifier = modifierNode.getValue();
+        }
 
-//     private static MethodInfo parseMethod(XMLNode methodNode) {
-//         MethodInfo methodInfo = new MethodInfo();
-//         methodInfo.setName(methodNode.child("name").getValue());  // Définir le nom de la méthode
-//         methodInfo.setReturnType(methodNode.child("returnType").getValue());  // Définir le type de retour
+        FieldInfo fieldInfo = new FieldInfo();
+        fieldInfo.setName(fieldName);
+        fieldInfo.setType(fieldType);
+        fieldInfo.setModifiers(modifier != null && modifier.equals("public") ? 1 : modifier != null && modifier.equals("private") ? 2 : 4); // Simplifié
+        return fieldInfo;
+    }
 
-//         // Ajouter les paramètres
-//         XMLNode parametersNode = methodNode.child("parameters");
-//         if (parametersNode != null) {
-//             XMLNode[] paramNodes = parametersNode.children();
-//             for (XMLNode paramNode : paramNodes) {
-//                 ParameterInfo parameterInfo = parseParameter(paramNode);  // Parser un paramètre
-//                 methodInfo.addParameter(parameterInfo);  // Ajouter le paramètre à la méthode
-//             }
-//         }
+    private static MethodInfo parseMethod(XMLNode methodNode) {
+        String methodName = null;
+        String returnType = null;
+        String modifier = null;
 
-//         // Ajouter les annotations à la méthode
-//         XMLNode annotationsNode = methodNode.child("annotations");
-//         if (annotationsNode != null) {
-//             XMLNode[] annotationNodes = annotationsNode.children();
-//             for (XMLNode annotationNode : annotationNodes) {
-//                 AnnotationInfo annotationInfo = new AnnotationInfo();
-//                 annotationInfo.setName(annotationNode.getValue());  // Définir le nom de l'annotation
-//                 methodInfo.addAnnotation(annotationInfo);  // Ajouter l'annotation à la méthode
-//             }
-//         }
+        XMLNode nameNode = methodNode.child("name");
+        if (nameNode != null) {
+            methodName = nameNode.getValue();
+        }
 
-//         return methodInfo;  // Retourner la méthode complète
-//     }
+        XMLNode returnTypeNode = methodNode.child("returnType");
+        if (returnTypeNode != null) {
+            returnType = returnTypeNode.getValue();
+        }
 
-//     private static ParameterInfo parseParameter(XMLNode paramNode) {
-//         ParameterInfo parameterInfo = new ParameterInfo();
-//         parameterInfo.setName(paramNode.child("name").getValue());  // Définir le nom du paramètre
-//         parameterInfo.setType(paramNode.child("type").getValue());  // Définir le type du paramètre
+        XMLNode modifierNode = methodNode.child("modifier");
+        if (modifierNode != null) {
+            modifier = modifierNode.getValue();
+        }
 
-//         // Ajouter les annotations au paramètre
-//         XMLNode annotationsNode = paramNode.child("annotations");
-//         if (annotationsNode != null) {
-//             XMLNode[] annotationNodes = annotationsNode.children();
-//             for (XMLNode annotationNode : annotationNodes) {
-//                 AnnotationInfo annotationInfo = new AnnotationInfo();
-//                 annotationInfo.setName(annotationNode.getValue());  // Définir le nom de l'annotation
-//                 parameterInfo.addAnnotation(annotationInfo);  // Ajouter l'annotation au paramètre
-//             }
-//         }
+        MethodInfo methodInfo = new MethodInfo();
+        methodInfo.setName(methodName);
+        methodInfo.setReturnType(returnType);
+        methodInfo.setModifiers(modifier != null && modifier.equals("public") ? 1 : modifier != null && modifier.equals("private") ? 2 : 4); // Simplifié
 
-//         return parameterInfo;  // Retourner le paramètre complet
-//     }
-// }
+        // Parcourir les paramètres
+        XMLNode parametersNode = methodNode.child("parameters");
+        if (parametersNode != null) {
+            for (XMLNode parameterNode : parametersNode.children()) {
+                methodInfo.addParameter(parseParameter(parameterNode));
+            }
+        }
+
+        return methodInfo;
+    }
+
+    private static ParameterInfo parseParameter(XMLNode parameterNode) {
+        String paramName = null;
+        String paramType = null;
+
+        XMLNode nameNode = parameterNode.child("name");
+        if (nameNode != null) {
+            paramName = nameNode.getValue();
+        }
+
+        XMLNode typeNode = parameterNode.child("type");
+        if (typeNode != null) {
+            paramType = typeNode.getValue();
+        }
+
+        ParameterInfo parameterInfo = new ParameterInfo();
+        parameterInfo.setName(paramName);
+        parameterInfo.setType(paramType);
+        return parameterInfo;
+    }
+
+    private static RelationInfo parseRelation(XMLNode relationNode) {
+        String type = null;
+        String target = null;
+        String source = null;
+
+        XMLNode typeNode = relationNode.child("type");
+        if (typeNode != null) {
+            type = typeNode.getValue();
+        }
+
+        XMLNode targetNode = relationNode.child("target");
+        if (targetNode != null) {
+            target = targetNode.getValue();
+        }
+
+        XMLNode sourceNode = relationNode.child("source");
+        if (sourceNode != null) {
+            source = sourceNode.getValue();
+        }
+
+        return new RelationInfo(source, target, type);
+    }
+
+    private static InterfaceInfo parseInterface(XMLNode interfaceNode) {
+        String interfaceName = null;
+
+        XMLNode nameNode = interfaceNode.child("name");
+        if (nameNode != null) {
+            interfaceName = nameNode.getValue();
+        }
+
+        return new InterfaceInfo(); // À adapter selon votre implémentation
+    }
+
+    private static EnumInfo parseEnum(XMLNode enumNode) {
+        String enumName = null;
+
+        XMLNode nameNode = enumNode.child("name");
+        if (nameNode != null) {
+            enumName = nameNode.getValue();
+        }
+
+        return new EnumInfo(); // À adapter selon votre implémentation
+    }
+
+    private static AnnotationInfo parseAnnotation(XMLNode annotationNode) {
+        String annotationName = null;
+
+        XMLNode nameNode = annotationNode.child("name");
+        if (nameNode != null) {
+            annotationName = nameNode.getValue();
+        }
+
+        return new AnnotationInfo(); // À adapter selon votre implémentation
+    }
+}

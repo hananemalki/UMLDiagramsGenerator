@@ -120,7 +120,7 @@ public class XMIParser {
     private ParameterInfo parseParameter(XMLNode paramNode) {
         ParameterInfo paramInfo = new ParameterInfo();
         paramInfo.setName(paramNode.attribute("name"));
-        paramInfo.setType(paramNode.attribute("type")); 
+        paramInfo.setType(paramNode.attribute("type"));
         return paramInfo;
     }
 

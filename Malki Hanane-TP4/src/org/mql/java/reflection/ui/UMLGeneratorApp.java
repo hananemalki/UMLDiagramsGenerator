@@ -4,8 +4,8 @@ import javax.swing.*;
 import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
 import java.io.File;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
 import org.mql.java.reflection.models.*;
 import org.mql.java.reflection.xml.*;
@@ -103,22 +103,28 @@ public class UMLGeneratorApp extends JFrame {
                     // Étape 2 : Exportation XML
                     publish("Exportation XML...");
                     progressBar.setValue(40);
-                    XMLExporter xmlExporter = new XMLExporter();
-                    xmlExporter.exportToXML(packagesAndTypes, 
-                        workspacePath + "/" + projectName + "_structure.xml");
+                    String outputPath = workspacePath + "/" + projectName + "_structure.xml";
+                    File directory = new File(outputPath).getParentFile();
+                    if (!directory.exists()) {
+                        directory.mkdirs();  
+                    }
 
-                    // Étape 3 : Exportation XMI
-                    publish("Conversion en XMI...");
+                    XMLExporter exporter = new XMLExporter();
+                    exporter.exportToXML(packagesAndTypes, outputPath);
+                    publish("Fichier XML généré avec succès : " + outputPath);
+
+                    // Étape 3 : Parsing du fichier XML
+                    publish("Parsing du fichier XML...");
                     progressBar.setValue(60);
-                    XMIExporter xmiExporter = new XMIExporter();
-                    xmiExporter.exportToXMI(packagesAndTypes, 
-                        workspacePath + "/" + projectName + "_model.xmi");
+                    List<CustomPackage> packages = XMLParser.parse(outputPath);
 
-                    // Étape 4 : Parsing XMI (optionnel)
-                    publish("Parsing XMI...");
+                    // Étape 4 : Affichage du diagramme UML
+                    publish("Affichage du diagramme UML...");
                     progressBar.setValue(80);
-                    XMIParser xmiParser = new XMIParser(
-                        workspacePath + "/" + projectName + "_model.xmi");
+                    SwingUtilities.invokeLater(() -> {
+                        UMLDiagramFrame diagramFrame = new UMLDiagramFrame(packages);
+                        diagramFrame.setVisible(true);
+                    });
 
                     // Étape finale
                     publish("Génération terminée !");
@@ -127,6 +133,7 @@ public class UMLGeneratorApp extends JFrame {
                 } catch (Exception e) {
                     publish("Erreur : " + e.getMessage());
                     progressBar.setValue(0);
+                    e.printStackTrace(); // Afficher la stack trace dans la console
                 }
                 return null;
             }

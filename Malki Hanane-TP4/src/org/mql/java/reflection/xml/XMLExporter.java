@@ -61,63 +61,99 @@ public class XMLExporter {
 
     private void processTypeList(List<TypeInfo> types, String elementName, Element parentElement) {
         if (types == null || types.isEmpty()) return;
-
-        Element typesElement = document.createElement(elementName + "es");
-        parentElement.appendChild(typesElement);
-
+    
         for (TypeInfo type : types) {
-            Element typeElement = document.createElement(elementName);
-            typeElement.setAttribute("name", type.getName());
-            typesElement.appendChild(typeElement);
-
+            Element typeElement = document.createElement(elementName); // "class", "interface", etc.
+            parentElement.appendChild(typeElement);
+    
+            // Ajouter le nom de la classe
+            Element nameElement = document.createElement("name");
+            nameElement.appendChild(document.createTextNode(type.getName()));
+            typeElement.appendChild(nameElement);
+    
+            // Ajouter les champs
             if (!type.getFields().isEmpty()) {
                 Element fieldsElement = document.createElement("fields");
                 typeElement.appendChild(fieldsElement);
-
+    
                 for (FieldInfo field : type.getFields()) {
                     Element fieldElement = document.createElement("field");
-                    fieldElement.setAttribute("name", field.getName());
-                    fieldElement.setAttribute("type", field.getType());
                     fieldsElement.appendChild(fieldElement);
+    
+                    Element fieldNameElement = document.createElement("name");
+                    fieldNameElement.appendChild(document.createTextNode(field.getName()));
+                    fieldElement.appendChild(fieldNameElement);
+    
+                    Element fieldTypeElement = document.createElement("type");
+                    fieldTypeElement.appendChild(document.createTextNode(field.getType()));
+                    fieldElement.appendChild(fieldTypeElement);
+    
+                    Element modifierElement = document.createElement("modifier");
+                    modifierElement.appendChild(document.createTextNode(field.getVisibility()));
+                    fieldElement.appendChild(modifierElement);
                 }
             }
-
+    
+            // Ajouter les méthodes
             if (!type.getMethods().isEmpty()) {
                 Element methodsElement = document.createElement("methods");
                 typeElement.appendChild(methodsElement);
-
+    
                 for (MethodInfo method : type.getMethods()) {
                     Element methodElement = document.createElement("method");
-                    methodElement.setAttribute("name", method.getName());
-                    methodElement.setAttribute("returnType", method.getReturnType());
                     methodsElement.appendChild(methodElement);
-
+    
+                    Element methodNameElement = document.createElement("name");
+                    methodNameElement.appendChild(document.createTextNode(method.getName()));
+                    methodElement.appendChild(methodNameElement);
+    
+                    Element returnTypeElement = document.createElement("returnType");
+                    returnTypeElement.appendChild(document.createTextNode(method.getReturnType()));
+                    methodElement.appendChild(returnTypeElement);
+    
+                    Element modifierElement = document.createElement("modifier");
+                    modifierElement.appendChild(document.createTextNode(method.getVisibility()));
+                    methodElement.appendChild(modifierElement);
+    
+                    // Ajouter les paramètres
                     if (!method.getParameters().isEmpty()) {
                         Element parametersElement = document.createElement("parameters");
                         methodElement.appendChild(parametersElement);
-
+    
                         for (ParameterInfo param : method.getParameters()) {
                             Element paramElement = document.createElement("parameter");
-                            paramElement.setAttribute("name", param.getName());
-                            paramElement.setAttribute("type", param.getType());
                             parametersElement.appendChild(paramElement);
+    
+                            Element paramNameElement = document.createElement("name");
+                            paramNameElement.appendChild(document.createTextNode(param.getName()));
+                            paramElement.appendChild(paramNameElement);
+    
+                            Element paramTypeElement = document.createElement("type");
+                            paramTypeElement.appendChild(document.createTextNode(param.getType()));
+                            paramElement.appendChild(paramTypeElement);
                         }
                     }
                 }
             }
-
+    
+            // Ajouter les relations
             if (type instanceof ClassInfo) {
                 ClassInfo classInfo = (ClassInfo) type;
                 if (!classInfo.getRelations().isEmpty()) {
                     Element relationsElement = document.createElement("relations");
                     typeElement.appendChild(relationsElement);
-
+    
                     for (RelationInfo relation : classInfo.getRelations()) {
                         Element relationElement = document.createElement("relation");
-                        relationElement.setAttribute("type", relation.getType());
-                        relationElement.setAttribute("source", relation.getSource());
-                        relationElement.setAttribute("target", relation.getTarget());
                         relationsElement.appendChild(relationElement);
+    
+                        Element relationTypeElement = document.createElement("type");
+                        relationTypeElement.appendChild(document.createTextNode(relation.getType()));
+                        relationElement.appendChild(relationTypeElement);
+    
+                        Element targetElement = document.createElement("target");
+                        targetElement.appendChild(document.createTextNode(relation.getTarget()));
+                        relationElement.appendChild(targetElement);
                     }
                 }
             }

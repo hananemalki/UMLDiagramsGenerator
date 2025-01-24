@@ -17,11 +17,12 @@ import org.mql.java.reflection.models.*;
 import org.mql.java.reflection.xml.XMIExporter;
 import org.mql.java.reflection.xml.XMLExporter;
 import org.mql.java.reflection.xml.XMLGenerator;
+import org.mql.java.reflection.xml.XMLParser;
 
 public class Examples {
     public Examples()  {
         try {
-            exp02();
+            exp06();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -104,7 +105,7 @@ public class Examples {
             }
         }
     
-        String outputPath = "Malki Hanane-TP4/resources/xml/project_structure.xml"; 
+        String outputPath = "Malki Hanane-TP4/resources/xml/project_structure1.xml"; 
     
         File directory = new File("Malki Hanane-TP4/resources/xml");
         if (!directory.exists()) {
@@ -162,51 +163,53 @@ public class Examples {
     }
     }
 
-    void exp06() {
+    
+void exp06() {
     try {
-        List<Class<?>> testClasses = Arrays.asList(
-            Utilisateur.class,
-            Commande.class,
-            Produit.class,
-            Facture.class
-        );
+        // Génération du fichier XML
+        String workspacePath = "D:\\Master MQL M1\\data"; 
+        String projectName = "p03-reflection-and-annotations"; 
 
-        List<ClassInfo> classInfos = new Vector<>();
-        for (Class<?> cls : testClasses) {
-            ClassInfo classInfo = new ClassInfo(cls);
-            fillClassInfo(classInfo, cls);
-            classInfos.add(classInfo);
+        PackageExplorer explorer = new PackageExplorer(workspacePath);
+        Map<String, Map<String, List<TypeInfo>>> packagesAndTypes = explorer.getPackagesAndTypes(projectName);
+
+        String outputPath = "Malki Hanane-TP4/resources/xml/project_structure10.xml"; 
+
+        File directory = new File("Malki Hanane-TP4/resources/xml");
+        if (!directory.exists()) {
+            directory.mkdirs();  
         }
 
-        // Génération XML
-        String xmlOutputPath = "Malki Hanane-TP4/resources/xml/model_facture.xml";
-        XMLGenerator.generateXML(classInfos, "org.mql.java.reflection.examples");
-        System.out.println("Le fichier XML a été généré avec succès : " + xmlOutputPath);
+        XMLExporter exporter = new XMLExporter();
+        exporter.exportToXML(packagesAndTypes, outputPath);
+        System.out.println("Le fichier XML a été généré avec succès : " + outputPath);
 
-        // Génération XMI
-        String xmiOutputPath = "Malki Hanane-TP4/resources/xmi/model_facture.xml.xmi";
-        Map<String, Map<String, List<TypeInfo>>> packagesAndTypes = new HashMap<>();
-        Map<String, List<TypeInfo>> typesMap = new HashMap<>();
-        List<TypeInfo> classList = new Vector<>(classInfos);
-        typesMap.put("Classes", classList);
-        packagesAndTypes.put("org.mql.java.reflection.examples", typesMap);
+        // Parsing du fichier XML généré
+        List<CustomPackage> packages = XMLParser.parse(outputPath);
 
-        XMIExporter xmiExporter = new XMIExporter();
-        xmiExporter.exportToXMI(packagesAndTypes, xmiOutputPath);
-        System.out.println("Le fichier XMI a été généré avec succès : " + xmiOutputPath);
-
-        File xmlDir = new File("Malki Hanane-TP4/resources/xml");
-        File xmiDir = new File("Malki Hanane-TP4/resources/xmi");
-        
-        System.out.println("Dossier XML existe : " + xmlDir.exists());
-        System.out.println("Dossier XMI existe : " + xmiDir.exists());
+        // Affichage des packages et classes parsés
+        for (CustomPackage customPackage : packages) {
+            System.out.println("Package: " + customPackage.getName());
+            for (ClassInfo classInfo : customPackage.getClasses()) {
+                System.out.println("  Class: " + classInfo.getName());
+                for (FieldInfo fieldInfo : classInfo.getFields()) {
+                    System.out.println("    Field: " + fieldInfo.getName() + " (" + fieldInfo.getType() + ")");
+                }
+                for (MethodInfo methodInfo : classInfo.getMethods()) {
+                    System.out.println("    Method: " + methodInfo.getName() + " -> " + methodInfo.getReturnType());
+                }
+                for (RelationInfo relationInfo : classInfo.getRelations()) {
+                    System.out.println("    Relation: " + relationInfo.getType() + " -> " + relationInfo.getTarget());
+                }
+            }
+        }
 
     } catch (Exception e) {
         System.out.println("Erreur détaillée :");
-
         e.printStackTrace();
     }
-    }
+}
+
 
 
     public static void main(String[] args) {
