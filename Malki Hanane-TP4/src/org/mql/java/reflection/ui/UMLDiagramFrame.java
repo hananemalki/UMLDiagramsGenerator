@@ -13,7 +13,7 @@ public class UMLDiagramFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         UMLDiagramPanel diagramPanel = new UMLDiagramPanel(packages);
         JScrollPane scrollPane = new JScrollPane(diagramPanel);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(16); // Smoother scrolling
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16); 
         add(scrollPane);
     }
 }

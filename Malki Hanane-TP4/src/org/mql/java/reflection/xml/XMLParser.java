@@ -8,9 +8,7 @@ public class XMLParser {
 
     public static List<CustomPackage> parse(String filePath) {
         List<CustomPackage> packages = new Vector<>();
-        XMLNode root = new XMLNode(filePath); // Charge le fichier XML
-
-        // Parcourir les packages
+        XMLNode root = new XMLNode(filePath); 
         for (XMLNode packageNode : root.children()) {
             if (packageNode.getName().equals("package")) {
                 CustomPackage customPackage = parsePackage(packageNode);
@@ -24,8 +22,6 @@ public class XMLParser {
     private static CustomPackage parsePackage(XMLNode packageNode) {
         String packageName = packageNode.attribute("name");
         CustomPackage customPackage = new CustomPackage(packageName);
-
-        // Parcourir les classes, interfaces, enums et annotations
         for (XMLNode child : packageNode.children()) {
             switch (child.getName()) {
                 case "class":
@@ -50,24 +46,18 @@ public class XMLParser {
         String className = classNode.child("name").getValue();
         ClassInfo classInfo = new ClassInfo();
         classInfo.setName(className);
-
-        // Parcourir les champs
         XMLNode fieldsNode = classNode.child("fields");
         if (fieldsNode != null) {
             for (XMLNode fieldNode : fieldsNode.children()) {
                 classInfo.addField(parseField(fieldNode));
             }
         }
-
-        // Parcourir les méthodes
         XMLNode methodsNode = classNode.child("methods");
         if (methodsNode != null) {
             for (XMLNode methodNode : methodsNode.children()) {
                 classInfo.addMethod(parseMethod(methodNode));
             }
         }
-
-        // Parcourir les relations
         XMLNode relationsNode = classNode.child("relations");
         if (relationsNode != null) {
             for (XMLNode relationNode : relationsNode.children()) {
@@ -101,7 +91,7 @@ public class XMLParser {
         FieldInfo fieldInfo = new FieldInfo();
         fieldInfo.setName(fieldName);
         fieldInfo.setType(fieldType);
-        fieldInfo.setModifiers(modifier != null && modifier.equals("public") ? 1 : modifier != null && modifier.equals("private") ? 2 : 4); // Simplifié
+        fieldInfo.setModifiers(modifier != null && modifier.equals("public") ? 1 : modifier != null && modifier.equals("private") ? 2 : 4); 
         return fieldInfo;
     }
 
@@ -128,9 +118,8 @@ public class XMLParser {
         MethodInfo methodInfo = new MethodInfo();
         methodInfo.setName(methodName);
         methodInfo.setReturnType(returnType);
-        methodInfo.setModifiers(modifier != null && modifier.equals("public") ? 1 : modifier != null && modifier.equals("private") ? 2 : 4); // Simplifié
+        methodInfo.setModifiers(modifier != null && modifier.equals("public") ? 1 : modifier != null && modifier.equals("private") ? 2 : 4); 
 
-        // Parcourir les paramètres
         XMLNode parametersNode = methodNode.child("parameters");
         if (parametersNode != null) {
             for (XMLNode parameterNode : parametersNode.children()) {
@@ -144,17 +133,14 @@ public class XMLParser {
     private static ParameterInfo parseParameter(XMLNode parameterNode) {
         String paramName = null;
         String paramType = null;
-
         XMLNode nameNode = parameterNode.child("name");
         if (nameNode != null) {
             paramName = nameNode.getValue();
         }
-
         XMLNode typeNode = parameterNode.child("type");
         if (typeNode != null) {
             paramType = typeNode.getValue();
         }
-
         ParameterInfo parameterInfo = new ParameterInfo();
         parameterInfo.setName(paramName);
         parameterInfo.setType(paramType);
@@ -165,55 +151,50 @@ public class XMLParser {
         String type = null;
         String target = null;
         String source = null;
-
+    
         XMLNode typeNode = relationNode.child("type");
         if (typeNode != null) {
             type = typeNode.getValue();
         }
-
+    
         XMLNode targetNode = relationNode.child("target");
         if (targetNode != null) {
             target = targetNode.getValue();
         }
-
+    
         XMLNode sourceNode = relationNode.child("source");
         if (sourceNode != null) {
             source = sourceNode.getValue();
         }
-
-        return new RelationInfo(source, target, type);
+    
+        RelationInfo relation = new RelationInfo(source, target, type);
+        return relation;
     }
 
     private static InterfaceInfo parseInterface(XMLNode interfaceNode) {
         String interfaceName = null;
-
         XMLNode nameNode = interfaceNode.child("name");
         if (nameNode != null) {
             interfaceName = nameNode.getValue();
         }
-
-        return new InterfaceInfo(); // À adapter selon votre implémentation
+        return new InterfaceInfo();
     }
 
     private static EnumInfo parseEnum(XMLNode enumNode) {
         String enumName = null;
-
         XMLNode nameNode = enumNode.child("name");
         if (nameNode != null) {
             enumName = nameNode.getValue();
         }
-
-        return new EnumInfo(); // À adapter selon votre implémentation
+        return new EnumInfo(); 
     }
 
     private static AnnotationInfo parseAnnotation(XMLNode annotationNode) {
         String annotationName = null;
-
         XMLNode nameNode = annotationNode.child("name");
         if (nameNode != null) {
             annotationName = nameNode.getValue();
         }
-
-        return new AnnotationInfo(); // À adapter selon votre implémentation
+        return new AnnotationInfo();
     }
 }

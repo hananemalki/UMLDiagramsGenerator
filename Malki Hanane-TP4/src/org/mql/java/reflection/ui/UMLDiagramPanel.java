@@ -4,14 +4,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.util.List;
+import java.util.Vector;
 import java.util.ArrayList;
 
 import org.mql.java.reflection.models.*;
 
 public class UMLDiagramPanel extends JPanel {
     private List<CustomPackage> packages;
-    private List<Rectangle> classRectangles = new ArrayList<>();
-
+    private List<Rectangle> classRectangles = new Vector<>();
+    
     public UMLDiagramPanel(List<CustomPackage> packages) {
         this.packages = packages;
         setBackground(Color.WHITE);
@@ -41,78 +42,88 @@ public class UMLDiagramPanel extends JPanel {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
         classRectangles.clear();
         int x = 50;
         int y = 50;
-
+        int maxHeight = 0;
+        int maxClassesPerRow = 5; 
+        int classesInCurrentRow = 0;
         for (CustomPackage customPackage : packages) {
-            // Draw package title
-            g2d.setColor(new Color(70, 130, 180));
-            g2d.setFont(new Font("Arial", Font.BOLD, 16));
-            g2d.drawString("Package: " + customPackage.getName(), x, y);
-            y += 30;
-
-            // Draw classes
             for (ClassInfo classInfo : customPackage.getClasses()) {
                 Rectangle classRect = drawClass(g2d, classInfo, x, y);
                 classRectangles.add(classRect);
-                y += classRect.height + 30;
+                x += classRect.width + 20; 
+                maxHeight = Math.max(maxHeight, classRect.height);
+                classesInCurrentRow++;
+                if (classesInCurrentRow >= maxClassesPerRow) {
+                    x = 50;
+                    y += maxHeight + 40;
+                    maxHeight = 0;
+                    classesInCurrentRow = 0;
+                }
             }
-
-            y += 50;
+            x = 50;
+            y += maxHeight + 70;
+            maxHeight = 0;
+            classesInCurrentRow = 0;
         }
-
-        // Draw relations after drawing all classes
         drawRelations(g2d);
     }
-
+    
     private Rectangle drawClass(Graphics2D g2d, ClassInfo classInfo, int x, int y) {
-        int classWidth = 250;
-        int headerHeight = 40;
-        int fieldHeight = classInfo.getFields().size() * 20;
-        int methodHeight = classInfo.getMethods().size() * 20;
+        int classWidth = 200; 
+        int headerHeight = 30;
+        int fieldHeight = Math.min(classInfo.getFields().size() * 15, 60); 
+        int methodHeight = Math.min(classInfo.getMethods().size() * 15, 90); 
         int classHeight = headerHeight + fieldHeight + methodHeight + 20;
-
-        // Class rectangle
-        g2d.setColor(new Color(240, 248, 255));
-        g2d.fillRoundRect(x, y, classWidth, classHeight, 15, 15);
-        g2d.setColor(new Color(100, 149, 237));
-        g2d.drawRoundRect(x, y, classWidth, classHeight, 15, 15);
-
-        // Class name
+        Color backgroundColor = new Color(255, 255, 225);
+        g2d.setColor(backgroundColor);
+        g2d.fillRect(x, y, classWidth, classHeight);
         g2d.setColor(Color.BLACK);
-        g2d.setFont(new Font("Arial", Font.BOLD, 14));
-        g2d.drawString(classInfo.getName(), x + 10, y + 25);
-
-        // Fields
-        g2d.setFont(new Font("Arial", Font.PLAIN, 12));
-        int fieldY = y + headerHeight;
+        g2d.drawRect(x, y, classWidth, classHeight);
+        g2d.drawLine(x, y + headerHeight, x + classWidth, y + headerHeight);
+        g2d.drawLine(x, y + headerHeight + fieldHeight + 10, x + classWidth, y + headerHeight + fieldHeight + 10);
+        g2d.setFont(new Font("Arial", Font.BOLD, 12));
+        g2d.drawString(classInfo.getName(), x + 10, y + 20);
+    
+        g2d.setFont(new Font("Arial", Font.PLAIN, 10));
+        int fieldY = y + headerHeight + 15;
         for (FieldInfo fieldInfo : classInfo.getFields()) {
             g2d.drawString(fieldInfo.getName() + ": " + fieldInfo.getType(), x + 10, fieldY);
-            fieldY += 20;
+            fieldY += 15;
+            if (fieldY - y > headerHeight + fieldHeight) break; 
         }
 
-        // Methods
-        g2d.setColor(new Color(0, 100, 0));
+        g2d.setColor(Color.BLACK);
         int methodY = fieldY + 10;
         for (MethodInfo methodInfo : classInfo.getMethods()) {
             g2d.drawString(methodInfo.getName() + "(): " + methodInfo.getReturnType(), x + 10, methodY);
-            methodY += 20;
+            methodY += 15;
+            if (methodY - y > classHeight) break; 
         }
-
-        return new Rectangle(x, y, classWidth, classHeight);
+    
+        Rectangle classRect = new Rectangle(x, y, classWidth, classHeight);
+        classRectangles.add(classRect); 
+        return classRect;
     }
 
     private void drawRelations(Graphics2D g2d) {
         for (CustomPackage customPackage : packages) {
             for (ClassInfo classInfo : customPackage.getClasses()) {
                 for (RelationInfo relation : classInfo.getRelations()) {
+                    if (relation.getSource().startsWith("java.") || relation.getTarget().startsWith("java.")) {
+                        System.out.println("Ignorer la relation externe : " + relation);
+                        continue;
+                    }
+                    System.out.println("Relation: " + relation);
                     Rectangle sourceRect = findClassRectangle(relation.getSource());
                     Rectangle targetRect = findClassRectangle(relation.getTarget());
-
+                    System.out.println("Source Rectangle: " + sourceRect);
+                    System.out.println("Target Rectangle: " + targetRect);
                     if (sourceRect != null && targetRect != null) {
                         drawRelationArrow(g2d, sourceRect, targetRect, relation.getType());
+                    } else {
+                        System.out.println("Could not find rectangles for relation: " + relation);
                     }
                 }
             }
@@ -120,12 +131,18 @@ public class UMLDiagramPanel extends JPanel {
     }
 
     private Rectangle findClassRectangle(String className) {
-        for (Rectangle rect : classRectangles) {
-            // Implement logic to match class name with rectangle
-            // This might require storing class names with rectangles
-            // For now, returning null as a placeholder
-            return null;
+        for (CustomPackage customPackage : packages) {
+            for (ClassInfo classInfo : customPackage.getClasses()) {
+                if (classInfo.getName().equals(className) || 
+                    (customPackage.getName() + "." + classInfo.getName()).equals(className)) {
+                    int index = customPackage.getClasses().indexOf(classInfo);
+                    if (index >= 0 && index < classRectangles.size()) {
+                        return classRectangles.get(index);
+                    }
+                }
+            }
         }
+        System.out.println("Classe non trouvée : " + className);
         return null;
     }
 
@@ -134,9 +151,7 @@ public class UMLDiagramPanel extends JPanel {
         int sourceY = source.y + source.height / 2;
         int targetX = target.x + target.width / 2;
         int targetY = target.y + target.height / 2;
-
         g2d.setStroke(new BasicStroke(2.0f));
-
         switch (relationType.toLowerCase()) {
             case "extends":
                 g2d.setColor(Color.RED);
@@ -166,18 +181,15 @@ public class UMLDiagramPanel extends JPanel {
 
     private void drawArrowWithHollowTriangle(Graphics2D g2d, int sourceX, int sourceY, int targetX, int targetY) {
         g2d.drawLine(sourceX, sourceY, targetX, targetY);
-        
         double angle = Math.atan2(targetY - sourceY, targetX - sourceX);
         int[] xPoints = new int[3];
         int[] yPoints = new int[3];
-        
         xPoints[0] = targetX;
         yPoints[0] = targetY;
         xPoints[1] = (int) (targetX - 10 * Math.cos(angle - Math.PI / 6));
         yPoints[1] = (int) (targetY - 10 * Math.sin(angle - Math.PI / 6));
         xPoints[2] = (int) (targetX - 10 * Math.cos(angle + Math.PI / 6));
         yPoints[2] = (int) (targetY - 10 * Math.sin(angle + Math.PI / 6));
-        
         g2d.drawPolygon(xPoints, yPoints, 3);
     }
 
@@ -185,22 +197,17 @@ public class UMLDiagramPanel extends JPanel {
         Stroke oldStroke = g2d.getStroke();
         float[] dash = {5.0f, 5.0f};
         g2d.setStroke(new BasicStroke(1.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash, 0.0f));
-        
         g2d.drawLine(sourceX, sourceY, targetX, targetY);
-        
         double angle = Math.atan2(targetY - sourceY, targetX - sourceX);
-        
         if (isHollowTriangle) {
             int[] xPoints = new int[3];
             int[] yPoints = new int[3];
-            
             xPoints[0] = targetX;
             yPoints[0] = targetY;
             xPoints[1] = (int) (targetX - 10 * Math.cos(angle - Math.PI / 6));
             yPoints[1] = (int) (targetY - 10 * Math.sin(angle - Math.PI / 6));
             xPoints[2] = (int) (targetX - 10 * Math.cos(angle + Math.PI / 6));
             yPoints[2] = (int) (targetY - 10 * Math.sin(angle + Math.PI / 6));
-            
             g2d.drawPolygon(xPoints, yPoints, 3);
         } else {
             drawArrowHead(g2d, sourceX, sourceY, targetX, targetY);
@@ -211,11 +218,9 @@ public class UMLDiagramPanel extends JPanel {
 
     private void drawArrowWithFilledDiamond(Graphics2D g2d, int sourceX, int sourceY, int targetX, int targetY) {
         g2d.drawLine(sourceX, sourceY, targetX, targetY);
-        
         double angle = Math.atan2(targetY - sourceY, targetX - sourceX);
         int[] xPoints = new int[4];
         int[] yPoints = new int[4];
-        
         xPoints[0] = targetX;
         yPoints[0] = targetY;
         xPoints[1] = (int) (targetX - 10 * Math.cos(angle - Math.PI / 4));
@@ -224,17 +229,14 @@ public class UMLDiagramPanel extends JPanel {
         yPoints[2] = (int) (targetY - 20 * Math.sin(angle));
         xPoints[3] = (int) (targetX - 10 * Math.cos(angle + Math.PI / 4));
         yPoints[3] = (int) (targetY - 10 * Math.sin(angle + Math.PI / 4));
-        
         g2d.fillPolygon(xPoints, yPoints, 4);
     }
 
     private void drawArrowWithHollowDiamond(Graphics2D g2d, int sourceX, int sourceY, int targetX, int targetY) {
         g2d.drawLine(sourceX, sourceY, targetX, targetY);
-        
         double angle = Math.atan2(targetY - sourceY, targetX - sourceX);
         int[] xPoints = new int[4];
         int[] yPoints = new int[4];
-        
         xPoints[0] = targetX;
         yPoints[0] = targetY;
         xPoints[1] = (int) (targetX - 10 * Math.cos(angle - Math.PI / 4));
@@ -243,21 +245,14 @@ public class UMLDiagramPanel extends JPanel {
         yPoints[2] = (int) (targetY - 20 * Math.sin(angle));
         xPoints[3] = (int) (targetX - 10 * Math.cos(angle + Math.PI / 4));
         yPoints[3] = (int) (targetY - 10 * Math.sin(angle + Math.PI / 4));
-        
         g2d.drawPolygon(xPoints, yPoints, 4);
     }
 
     private void drawArrowHead(Graphics2D g2d, int sourceX, int sourceY, int targetX, int targetY) {
         double angle = Math.atan2(targetY - sourceY, targetX - sourceX);
         int arrowSize = 10;
-
-        g2d.drawLine(targetX, targetY,
-            (int) (targetX - arrowSize * Math.cos(angle - Math.PI / 6)),
-            (int) (targetY - arrowSize * Math.sin(angle - Math.PI / 6)));
-
-        g2d.drawLine(targetX, targetY,
-            (int) (targetX - arrowSize * Math.cos(angle + Math.PI / 6)),
-            (int) (targetY - arrowSize * Math.sin(angle + Math.PI / 6)));
+        g2d.drawLine(targetX, targetY,(int) (targetX - arrowSize * Math.cos(angle - Math.PI / 6)),(int) (targetY - arrowSize * Math.sin(angle - Math.PI / 6)));
+        g2d.drawLine(targetX, targetY,(int) (targetX - arrowSize * Math.cos(angle + Math.PI / 6)),(int) (targetY - arrowSize * Math.sin(angle + Math.PI / 6)));
     }
 
     private int calculateClassHeight(ClassInfo classInfo) {

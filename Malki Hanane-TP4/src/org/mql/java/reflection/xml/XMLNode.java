@@ -21,7 +21,7 @@ public class XMLNode {
 	}
 	
 	public XMLNode(String source) {
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newDefaultInstance();//pour l'instancier car on peut pas l'instancier directement
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newDefaultInstance();
 		try {
 			DocumentBuilder builder = factory.newDocumentBuilder();  
 			Document document =  builder.parse(source);

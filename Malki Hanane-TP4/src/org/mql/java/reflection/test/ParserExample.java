@@ -1,87 +1,60 @@
 package org.mql.java.reflection.test;
 
-import java.util.Arrays;
-import java.util.HashMap;
+import java.io.File;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
-
-import org.mql.java.reflection.examples.Commande;
-import org.mql.java.reflection.examples.Facture;
-import org.mql.java.reflection.examples.Produit;
-import org.mql.java.reflection.examples.Utilisateur;
 import org.mql.java.reflection.models.ClassInfo;
 import org.mql.java.reflection.models.CustomPackage;
 import org.mql.java.reflection.models.FieldInfo;
 import org.mql.java.reflection.models.MethodInfo;
+import org.mql.java.reflection.models.PackageExplorer;
 import org.mql.java.reflection.models.RelationInfo;
 import org.mql.java.reflection.models.TypeInfo;
-import org.mql.java.reflection.xml.XMIExporter;
-import org.mql.java.reflection.xml.XMIParser;
+import org.mql.java.reflection.xml.XMLExporter;
+import org.mql.java.reflection.xml.XMLParser;
 
 public class ParserExample {
     public ParserExample(){
         exp01();
     }
 
-    void exp01(){
-         try {
-            // Step 1: Create sample classes and their relations
-            ClassInfo utilisateurInfo = new ClassInfo(Utilisateur.class);
-            ClassInfo produitInfo = new ClassInfo(Produit.class);
-            ClassInfo commandeInfo = new ClassInfo(Commande.class);
-            ClassInfo factureInfo = new ClassInfo(Facture.class);
+    void exp01() {
+    try {
+        String workspacePath = "D:\\Master MQL M1\\data"; 
+        String projectName = "p03-reflection-and-annotations"; 
+        PackageExplorer explorer = new PackageExplorer(workspacePath);
+        Map<String, Map<String, List<TypeInfo>>> packagesAndTypes = explorer.getPackagesAndTypes(projectName);
+        String outputPath = "Malki Hanane-TP4/resources/xml/project_structure1.xml"; 
+        File directory = new File("Malki Hanane-TP4/resources/xml");
+        if (!directory.exists()) {
+            directory.mkdirs();  
+        }
 
-            // Add sample relations
-            utilisateurInfo.addRelation(new RelationInfo("ASSOCIATION", "Utilisateur", "Commande"));
-            commandeInfo.addRelation(new RelationInfo("ASSOCIATION", "Commande", "Produit"));
-            commandeInfo.addRelation(new RelationInfo("ASSOCIATION", "Commande", "Facture"));
-
-            // Prepare data for export
-            Map<String, Map<String, List<TypeInfo>>> packagesAndTypes = new HashMap<>();
-            Map<String, List<TypeInfo>> typesInPackage = new HashMap<>();
-            List<TypeInfo> classList = new Vector<>(Arrays.asList(
-                utilisateurInfo, produitInfo, commandeInfo, factureInfo
-            ));
-            typesInPackage.put("Classes", classList);
-            packagesAndTypes.put("org.mql.java.reflection.examples", typesInPackage);
-
-            // Step 2: Export to XMI
-            String xmiFilePath = "user-cmd.xmi";
-            XMIExporter exporter = new XMIExporter();
-            exporter.exportToXMI(packagesAndTypes, xmiFilePath);
-
-            // Step 3: Parse the generated XMI file
-            XMIParser parser = new XMIParser(xmiFilePath);
-            
-            // Step 4: Print out parsed packages and their contents
-            Map<String, CustomPackage> parsedPackages = parser.getPackages();
-            System.out.println("Parsed Packages:");
-            for (Map.Entry<String, CustomPackage> packageEntry : parsedPackages.entrySet()) {
-                System.out.println("Package: " + packageEntry.getKey());
-                CustomPackage customPackage = packageEntry.getValue();
-                
-                System.out.println("  Classes:");
-                for (ClassInfo classInfo : customPackage.getClasses()) {
-                    System.out.println("    - " + classInfo.getName());
-                    
-                    System.out.println("      Fields:");
-                    for (FieldInfo field : classInfo.getFields()) {
-                        System.out.println("        * " + field.getName() + " : " + field.getType());
-                    }
-                    
-                    System.out.println("      Methods:");
-                    for (MethodInfo method : classInfo.getMethods()) {
-                        System.out.println("        * " + method.getName());
-                    }
+        XMLExporter exporter = new XMLExporter();
+        exporter.exportToXML(packagesAndTypes, outputPath);
+        System.out.println("Le fichier XML a été généré avec succès : " + outputPath);
+        List<CustomPackage> packages = XMLParser.parse(outputPath);
+        for (CustomPackage customPackage : packages) {
+            System.out.println("Package: " + customPackage.getName());
+            for (ClassInfo classInfo : customPackage.getClasses()) {
+                System.out.println("  Class: " + classInfo.getName());
+                for (FieldInfo fieldInfo : classInfo.getFields()) {
+                    System.out.println("    Field: " + fieldInfo.getName() + " (" + fieldInfo.getType() + ")");
+                }
+                for (MethodInfo methodInfo : classInfo.getMethods()) {
+                    System.out.println("    Method: " + methodInfo.getName() + " -> " + methodInfo.getReturnType());
+                }
+                for (RelationInfo relationInfo : classInfo.getRelations()) {
+                    System.out.println("    Relation: " + relationInfo.getType() + " -> " + relationInfo.getTarget());
                 }
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-        
+
+    } catch (Exception e) {
+        System.out.println("Erreur détaillée :");
+        e.printStackTrace();
     }
+}
     public static void main(String[] args) {
         new ParserExample();
     }
