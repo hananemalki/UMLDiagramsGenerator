@@ -6,7 +6,6 @@ public class InterfaceInfo extends TypeInfo {
         super(clazz);
     }
     public InterfaceInfo() {
-        //TODO Auto-generated constructor stub
     }
     @Override
     public String toString() {

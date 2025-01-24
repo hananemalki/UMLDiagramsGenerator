@@ -35,9 +35,6 @@ public class RelationExtractor {
         }
     }
 
-    // private static boolean isComposition(Field field) {
-    //     return field.getType().getSimpleName().equals("Form");
-    // }
     private static boolean isComposition(Field field) {
         Class<?> fieldType = field.getType();
         

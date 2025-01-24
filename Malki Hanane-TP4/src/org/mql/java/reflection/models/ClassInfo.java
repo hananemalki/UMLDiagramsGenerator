@@ -54,9 +54,6 @@ public class ClassInfo extends TypeInfo {
 		this.relations = relations;
 	}
 	public void addRelation(RelationInfo relation) {
-	    // if (!relations.contains(relation)) {
-	    //     relations.add(relation);
-	    // }
         if (relation != null && !relations.contains(relation)) {
             relations.add(relation);
         }
@@ -69,19 +66,12 @@ public class ClassInfo extends TypeInfo {
     public List<MethodInfo> getMethods() {
         return methods;
     }
-
-    //public void addField(Field field) {
-      //  fields.add(new FieldInfo(field));  
-    //}
     public void addField(FieldInfo fieldInfo) {
         if (!fields.contains(fieldInfo)) {
             fields.add(fieldInfo);
         }
     }
 
-    // public void addMethod(Method meth) {
-    //     methods.add(new MethodInfo(meth)); 
-    // }
     public void addMethod(MethodInfo methInfo) {
         if (!methods.contains(methInfo)) {
             methods.add(methInfo);

@@ -1,8 +1,6 @@
 package org.mql.java.reflection.models;
 
 import java.io.File;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
@@ -96,10 +94,6 @@ public class PackageExplorer {
             packagesAndTypes.put(packageName, typesMap);
         }
     }
-
-    // private boolean isComposition(Field field) {
-    //     return field.getType().getSimpleName().equals("Form"); 
-    // }
 
     public void printRelations(Map<String, Map<String, List<TypeInfo>>> packagesAndTypes) {
         for (String packageName : packagesAndTypes.keySet()) {

@@ -15,27 +15,20 @@ import java.util.*;
 public class XMIExporter {
     private Document document;
     private Map<String, Element> elementCache = new HashMap<>();
-
     public void exportToXMI(Map<String, Map<String, List<TypeInfo>>> packagesAndTypes, String outputPath) {
         try {
             initializeDocument();
             Element modelElement = createModelElement();
-            
-            // Première passe : créer tous les éléments
             for (Map.Entry<String, Map<String, List<TypeInfo>>> packageEntry : packagesAndTypes.entrySet()) {
                 Element packageElement = createPackageElement(packageEntry.getKey());
                 modelElement.appendChild(packageElement);
-                
                 Map<String, List<TypeInfo>> typesMap = packageEntry.getValue();
                 processAllTypes(typesMap, packageElement);
             }
-            
-            // Deuxième passe : ajouter toutes les relations
             for (Map.Entry<String, Map<String, List<TypeInfo>>> packageEntry : packagesAndTypes.entrySet()) {
                 Map<String, List<TypeInfo>> typesMap = packageEntry.getValue();
                 processAllRelations(typesMap);
             }
-
             saveDocument(outputPath);
         } catch (Exception e) {
             e.printStackTrace();
@@ -46,7 +39,6 @@ public class XMIExporter {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
         document = builder.newDocument();
-        
         Element xmiElement = document.createElement("xmi:XMI");
         xmiElement.setAttribute("xmlns:xmi", "http://www.omg.org/spec/XMI/20131001");
         xmiElement.setAttribute("xmlns:uml", "http://www.eclipse.org/uml2/5.0.0/UML");
@@ -97,7 +89,6 @@ public class XMIExporter {
     }
 
     private void processClassMembers(ClassInfo classInfo, Element classElement) {
-        // Attributs
         for (FieldInfo field : classInfo.getFields()) {
             Element attributeElement = document.createElement("ownedAttribute");
             attributeElement.setAttribute("xmi:id", "attr_" + classInfo.getName() + "_" + field.getName());
@@ -105,14 +96,13 @@ public class XMIExporter {
 
             Element typeElement = document.createElement("type");
             typeElement.setAttribute("xmi:type", "uml:Class");
-            typeElement.setAttribute("href", "pathto:" + field.getType()); // Or use appropriate type reference
+            typeElement.setAttribute("href", "pathto:" + field.getType()); 
             attributeElement.appendChild(typeElement);
 
             attributeElement.setAttribute("visibility", field.getVisibility());
             classElement.appendChild(attributeElement);
         }
 
-        // Méthodes
         for (MethodInfo method : classInfo.getMethods()) {
             Element operationElement = document.createElement("ownedOperation");
             operationElement.setAttribute("xmi:id", "op_" + classInfo.getName() + "_" + method.getName());

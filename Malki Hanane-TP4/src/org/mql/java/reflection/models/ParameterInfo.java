@@ -20,7 +20,6 @@ public class ParameterInfo {
     }
     
     public ParameterInfo() {
-        //TODO Auto-generated constructor stub
     }
 
     public String getName() { return name; }
