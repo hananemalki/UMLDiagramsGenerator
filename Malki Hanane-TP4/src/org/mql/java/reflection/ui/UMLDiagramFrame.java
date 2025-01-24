@@ -8,12 +8,12 @@ import java.util.List;
 
 public class UMLDiagramFrame extends JFrame {
     public UMLDiagramFrame(List<CustomPackage> packages) {
-        setTitle("Diagramme UML");
-        setSize(1200, 800);
+        setTitle("UML Diagram");
+        setSize(1400, 900);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
         UMLDiagramPanel diagramPanel = new UMLDiagramPanel(packages);
-        JScrollPane scrollPane = new JScrollPane(diagramPanel); // Ajouter un JScrollPane pour gérer le défilement
-        add(scrollPane); // Ajouter le JScrollPane à la JFrame
+        JScrollPane scrollPane = new JScrollPane(diagramPanel);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16); // Smoother scrolling
+        add(scrollPane);
     }
 }
