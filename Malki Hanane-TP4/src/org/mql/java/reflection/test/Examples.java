@@ -163,7 +163,51 @@ public class Examples {
     }
     }
 
-    
+    void exp07() {
+    try {
+        List<Class<?>> testClasses = Arrays.asList(
+            Utilisateur.class,
+            Commande.class,
+            Produit.class,
+            Facture.class
+        );
+
+        List<ClassInfo> classInfos = new Vector<>();
+        for (Class<?> cls : testClasses) {
+            ClassInfo classInfo = new ClassInfo(cls);
+            fillClassInfo(classInfo, cls);
+            classInfos.add(classInfo);
+        }
+
+        // Génération XML
+        String xmlOutputPath = "Malki Hanane-TP4/resources/xml/model_facture.xml";
+        XMLGenerator.generateXML(classInfos, "org.mql.java.reflection.examples");
+        System.out.println("Le fichier XML a été généré avec succès : " + xmlOutputPath);
+
+        // Génération XMI
+        String xmiOutputPath = "Malki Hanane-TP4/resources/xmi/model_facture.xml.xmi";
+        Map<String, Map<String, List<TypeInfo>>> packagesAndTypes = new HashMap<>();
+        Map<String, List<TypeInfo>> typesMap = new HashMap<>();
+        List<TypeInfo> classList = new Vector<>(classInfos);
+        typesMap.put("Classes", classList);
+        packagesAndTypes.put("org.mql.java.reflection.examples", typesMap);
+
+        XMIExporter xmiExporter = new XMIExporter();
+        xmiExporter.exportToXMI(packagesAndTypes, xmiOutputPath);
+        System.out.println("Le fichier XMI a été généré avec succès : " + xmiOutputPath);
+
+        File xmlDir = new File("Malki Hanane-TP4/resources/xml");
+        File xmiDir = new File("Malki Hanane-TP4/resources/xmi");
+        
+        System.out.println("Dossier XML existe : " + xmlDir.exists());
+        System.out.println("Dossier XMI existe : " + xmiDir.exists());
+
+    } catch (Exception e) {
+        System.out.println("Erreur détaillée :");
+
+        e.printStackTrace();
+    }
+}
 void exp06() {
     try {
         // Génération du fichier XML
@@ -209,6 +253,7 @@ void exp06() {
         e.printStackTrace();
     }
 }
+
 
 
 
